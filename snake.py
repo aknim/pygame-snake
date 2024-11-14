@@ -25,7 +25,7 @@ game_over_font = pygame.font.SysFont('arial', 48)
 
 # Clock to control the speed
 clock = pygame.time.Clock()
-
+high_score = 0
 
 
 # Reset Game
@@ -47,9 +47,12 @@ def reset_game():
 def show_game_over():
     game_over_text = game_over_font.render('GAME OVER', True, RED)
     score_text = font.render(f'Final Score: {score}', True, WHITE)
+    high_score_text = font.render(f'High Score: {high_score}', True, WHITE)
     restart_text = font.render('Press R to Restart', True, WHITE)
+
     screen.blit(game_over_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
     screen.blit(score_text, (SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2))
+    screen.blit(high_score_text, (SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2 + 30))
     screen.blit(restart_text, (SCREEN_WIDTH // 3.5, SCREEN_HEIGHT // 1.5))
     pygame.display.flip()
     #pygame.time.wait(3000) # Wait for 3 seconds before closing
@@ -101,6 +104,8 @@ while running:
     # Check if the snake has eaten the food
     if snake[0] == food_position:
         score += 10
+        if score > high_score:
+            high_score = score
         food_spawned = False
     else:
         snake.pop()
@@ -116,7 +121,7 @@ while running:
             snake[0][1] < 0 or snake[0][1] >= SCREEN_HEIGHT or
             snake[0] in snake[1:]):
         show_game_over()
-        
+
     # Draw everything
     screen.fill(BLACK)
     for segment in snake:
@@ -125,7 +130,10 @@ while running:
 
     # Render and display the score
     score_text = font.render(f'Score: {score}', True, WHITE)
+    high_score_text = font.render(f'High Score: {high_score}', True, WHITE)
     screen.blit(score_text, (10, 10))
+    hs_text_width, _ = font.size(f'High Score: {high_score}')
+    screen.blit(high_score_text, (SCREEN_WIDTH - hs_text_width - 10, 10))
 
     # Update the display
     pygame.display.flip()
