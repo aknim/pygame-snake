@@ -19,6 +19,9 @@ WHITE = (255, 255, 255)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Snake Game")
 
+# Font for displaying the score
+font = pygame.font.SysFont('arial', 24)
+
 # Clock to control the speed
 clock = pygame.time.Clock()
 
@@ -60,7 +63,7 @@ while running:
     elif snake_direction == 'DOWN':
         new_head = (snake[0][0], snake[0][1] + CELL_SIZE)
     elif snake_direction == 'LEFT':
-        new_head = (snake[0][0] - CELL_SIZE, snake[0][1], snake[0][1])
+        new_head = (snake[0][0] - CELL_SIZE, snake[0][1])
     elif snake_direction == 'RIGHT':
         new_head = (snake[0][0] + CELL_SIZE, snake[0][1])
 
@@ -89,6 +92,10 @@ while running:
     for segment in snake:
         pygame.draw.rect(screen, GREEN, pygame.Rect(segment[0], segment[1], CELL_SIZE, CELL_SIZE))
     pygame.draw.rect(screen, RED, pygame.Rect(food_position[0], food_position[1], CELL_SIZE, CELL_SIZE))
+
+    # Render and display the score
+    score_text = font.render(f'Score: {score}', True, WHITE)
+    screen.blit(score_text, (10, 10))
 
     # Update the display
     pygame.display.flip()
