@@ -26,30 +26,49 @@ game_over_font = pygame.font.SysFont('arial', 48)
 # Clock to control the speed
 clock = pygame.time.Clock()
 
-# Snake initialization
-snake = [(100, 100), (80, 100), (60, 100)] # List of (x, y) segments
-snake_direction = 'RIGHT'
-change_to = snake_direction
 
-# Food initialization
-food_position = (random.randint(0, (SCREEN_WIDTH // CELL_SIZE) -1) * CELL_SIZE,
-                 random.randint(0, (SCREEN_HEIGHT // CELL_SIZE) -1) * CELL_SIZE)
-food_spawned = True
 
-# Game variables
-score = 0
+# Reset Game
+def reset_game():
+    global snake, snake_direction, change_to, food_position, food_spawned, score, running
+
+    snake = [(100, 100), (80, 100), (60, 100)] # List of (x, y) segments
+    snake_direction = 'RIGHT'
+    change_to = snake_direction
+
+    food_position = (random.randint(0, (SCREEN_WIDTH // CELL_SIZE) -1) * CELL_SIZE,
+                     random.randint(0, (SCREEN_HEIGHT // CELL_SIZE) -1) * CELL_SIZE)
+    food_spawned = True
+
+    score = 0
+    running = True
 
 # Function to display the game over message
 def show_game_over():
     game_over_text = game_over_font.render('GAME OVER', True, RED)
     score_text = font.render(f'Final Score: {score}', True, WHITE)
+    restart_text = font.render('Press R to Restart', True, WHITE)
     screen.blit(game_over_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
     screen.blit(score_text, (SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2))
+    screen.blit(restart_text, (SCREEN_WIDTH // 3.5, SCREEN_HEIGHT // 1.5))
     pygame.display.flip()
-    pygame.time.wait(3000) # Wait for 3 seconds before closing
+    #pygame.time.wait(3000) # Wait for 3 seconds before closing
+
+    waiting_for_restart = True
+    while waiting_for_restart:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                waiting_for_restart = False
+                global running
+                running = False
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_r:
+                    waiting_for_restart = False
+                    reset_game()
+
+reset_game()
 
 # Main game loop
-running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -97,7 +116,7 @@ while running:
             snake[0][1] < 0 or snake[0][1] >= SCREEN_HEIGHT or
             snake[0] in snake[1:]):
         show_game_over()
-        running = False
+        
     # Draw everything
     screen.fill(BLACK)
     for segment in snake:
