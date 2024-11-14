@@ -19,8 +19,9 @@ WHITE = (255, 255, 255)
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Snake Game")
 
-# Font for displaying the score
+# Font for displaying the score & game over message
 font = pygame.font.SysFont('arial', 24)
+game_over_font = pygame.font.SysFont('arial', 48)
 
 # Clock to control the speed
 clock = pygame.time.Clock()
@@ -37,6 +38,15 @@ food_spawned = True
 
 # Game variables
 score = 0
+
+# Function to display the game over message
+def show_game_over():
+    game_over_text = game_over_font.render('GAME OVER', True, RED)
+    score_text = font.render(f'Final Score: {score}', True, WHITE)
+    screen.blit(game_over_text, (SCREEN_WIDTH // 4, SCREEN_HEIGHT // 3))
+    screen.blit(score_text, (SCREEN_WIDTH // 3, SCREEN_HEIGHT // 2))
+    pygame.display.flip()
+    pygame.time.wait(3000) # Wait for 3 seconds before closing
 
 # Main game loop
 running = True
@@ -86,6 +96,7 @@ while running:
     if (snake[0][0] < 0 or snake[0][0] >= SCREEN_WIDTH or
             snake[0][1] < 0 or snake[0][1] >= SCREEN_HEIGHT or
             snake[0] in snake[1:]):
+        show_game_over()
         running = False
     # Draw everything
     screen.fill(BLACK)
