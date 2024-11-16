@@ -14,6 +14,7 @@ BLACK = (0, 0, 0)
 GREEN = (0, 255, 0)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
+BLUE = (0, 0, 255)
 
 #Set up the screen
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -36,7 +37,7 @@ crash_sound = pygame.mixer.Sound('crash.wav')
 # Reset Game
 def reset_game():
     global snake, snake_direction, change_to, food_position, food_spawned, score, running
-    global speed
+    global speed, level, obstacles
 
     snake = [(100, 100), (80, 100), (60, 100)] # List of (x, y) segments
     snake_direction = 'RIGHT'
@@ -48,7 +49,18 @@ def reset_game():
 
     score = 0
     speed = 10
+    level = 1
+    obstacles = []
     running = True
+
+def generate_obstacles():
+    obstacles = []
+    for _ in range(level):
+        obstacle_x = random.randint(0, (SCREEN_WIDTH // CELL_SIZE)) * CELL_SIZE
+        obstacle_y = random.randint(0, (SCREEN_HEIGHT // CELL_SIZE)) * CELL_SIZE
+        obstacles.append((obstacle_x, obstacle_y))
+    return obstacles
+
 
 # Function to display the game over message
 def show_game_over():
@@ -121,11 +133,13 @@ while running:
         # Increase speed
         if score % 50 == 0:
             speed += 1 
+            level += 1
+            obstacles = generate_obstacles()
     else:
         snake.pop()
 
     # Spawn new food
-    if not food_spawned:
+    while not food_spawned or food_spawned in obstacles:
         food_position = (random.randint(0, (SCREEN_WIDTH // CELL_SIZE) - 1) * CELL_SIZE,
                         random.randint(0, (SCREEN_HEIGHT // CELL_SIZE) - 1) * CELL_SIZE)
         food_spawned = True
@@ -133,7 +147,8 @@ while running:
     # Check for collisions with boundaries or itself
     if (snake[0][0] < 0 or snake[0][0] >= SCREEN_WIDTH or
             snake[0][1] < 0 or snake[0][1] >= SCREEN_HEIGHT or
-            snake[0] in snake[1:]):
+            snake[0] in snake[1:] or
+            any(obstacle == snake[0] for obstacle in obstacles)):
         crash_sound.play()
         show_game_over()
 
@@ -142,11 +157,15 @@ while running:
     for segment in snake:
         pygame.draw.rect(screen, GREEN, pygame.Rect(segment[0], segment[1], CELL_SIZE, CELL_SIZE))
     pygame.draw.rect(screen, RED, pygame.Rect(food_position[0], food_position[1], CELL_SIZE, CELL_SIZE))
+    for obstacle in obstacles:
+        pygame.draw.rect(screen, BLUE, pygame.Rect(obstacle[0], obstacle[1], CELL_SIZE, CELL_SIZE))
 
     # Render and display the score
     score_text = font.render(f'Score: {score}', True, WHITE)
-    high_score_text = font.render(f'High Score: {high_score}', True, WHITE)
     screen.blit(score_text, (10, 10))
+    level_text = font.render(f'Level: {level}', True, WHITE)
+    screen.blit(level_text, (10, 40))
+    high_score_text = font.render(f'High Score: {high_score}', True, WHITE)
     hs_text_width, _ = font.size(f'High Score: {high_score}')
     screen.blit(high_score_text, (SCREEN_WIDTH - hs_text_width - 10, 10))
 
