@@ -35,6 +35,7 @@ crash_sound = pygame.mixer.Sound('crash.wav')
 # Reset Game
 def reset_game():
     global snake, snake_direction, change_to, food_position, food_spawned, score, running
+    global speed
 
     snake = [(100, 100), (80, 100), (60, 100)] # List of (x, y) segments
     snake_direction = 'RIGHT'
@@ -45,6 +46,7 @@ def reset_game():
     food_spawned = True
 
     score = 0
+    speed = 10
     running = True
 
 # Function to display the game over message
@@ -112,6 +114,9 @@ while running:
         if score > high_score:
             high_score = score
         food_spawned = False
+        # Increase speed
+        if score % 50 == 0:
+            speed += 1 
     else:
         snake.pop()
 
@@ -145,6 +150,6 @@ while running:
     pygame.display.flip()
 
     # Control the speed
-    clock.tick(10)
+    clock.tick(speed)
 
 pygame.quit()
