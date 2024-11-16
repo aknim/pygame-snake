@@ -27,6 +27,10 @@ game_over_font = pygame.font.SysFont('arial', 48)
 clock = pygame.time.Clock()
 high_score = 0
 
+# Load sound effects
+eat_sound = pygame.mixer.Sound('eat1.mp3')
+crash_sound = pygame.mixer.Sound('crash.wav')
+
 
 # Reset Game
 def reset_game():
@@ -104,6 +108,7 @@ while running:
     # Check if the snake has eaten the food
     if snake[0] == food_position:
         score += 10
+        eat_sound.play()
         if score > high_score:
             high_score = score
         food_spawned = False
@@ -120,6 +125,7 @@ while running:
     if (snake[0][0] < 0 or snake[0][0] >= SCREEN_WIDTH or
             snake[0][1] < 0 or snake[0][1] >= SCREEN_HEIGHT or
             snake[0] in snake[1:]):
+        crash_sound.play()
         show_game_over()
 
     # Draw everything
