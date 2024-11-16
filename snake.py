@@ -26,6 +26,7 @@ game_over_font = pygame.font.SysFont('arial', 48)
 # Clock to control the speed
 clock = pygame.time.Clock()
 high_score = 0
+borderLess_mode = True
 
 # Load sound effects
 eat_sound = pygame.mixer.Sound('eat1.mp3')
@@ -104,6 +105,9 @@ while running:
         new_head = (snake[0][0] - CELL_SIZE, snake[0][1])
     elif snake_direction == 'RIGHT':
         new_head = (snake[0][0] + CELL_SIZE, snake[0][1])
+
+    if borderLess_mode:
+        new_head = (new_head[0] % SCREEN_WIDTH, new_head[1] % SCREEN_HEIGHT)
 
     snake.insert(0, new_head)
 
